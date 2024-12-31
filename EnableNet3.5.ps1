@@ -15,8 +15,4 @@ try {
     # Catch and handle errors
     Write-Host "An error occurred during the installation process:" -ForegroundColor Red
     Write-Host $_.Exception.Message -ForegroundColor Red
-
-    # Optionally, log the error to a file
-    $logFile = "C:\Path\To\Your\Log\File.log"
-    Add-Content -Path $logFile -Value "$(Get-Date) - Error: $($_.Exception.Message)"
 }

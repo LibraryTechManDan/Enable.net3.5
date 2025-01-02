@@ -1,18 +1,20 @@
-# Run this PowerShell script as Administrator
-
 try {
-    # Attempt to enable the .NET Framework 3.5 feature
-    Write-Host "Starting .NET Framework 3.5 installation..." -ForegroundColor Green
-    $result = Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All -ErrorAction Stop
+    # Ensure the script is run as an administrator
+    if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+        Write-Error "This script must be run as an administrator."
+        exit
+    }
 
-    # Check if the installation was successful
-    if ($result.RestartNeeded -eq $true) {
-        Write-Host "Installation was successful, but a restart is required." -ForegroundColor Yellow
+    # Install .NET Framework 3.5 using the Add-WindowsCapability cmdlet
+    Write-Host "Installing .NET Framework 3.5 from Windows Updates..." -ForegroundColor Green
+
+    $result = Add-WindowsCapability -Online -Name "NetFx3~~~~"
+
+    if ($result.Status -eq "Success") {
+        Write-Host ".NET Framework 3.5 installed successfully." -ForegroundColor Green
     } else {
-        Write-Host "Installation completed successfully without needing a restart." -ForegroundColor Green
+        Write-Host ".NET Framework 3.5 installation encountered issues. Status: $($result.Status)" -ForegroundColor Yellow
     }
 } catch {
-    # Catch and handle errors
-    Write-Host "An error occurred during the installation process:" -ForegroundColor Red
-    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Error "An error occurred: $_"
 }
